@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Shared Renovate policy for knorrlabs and etknorr repositories.",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits"
+  ],
+  "reviewers": ["etknorr"],
+  "minimumReleaseAge": "7 days",
+  "automerge": false,
+  "packageRules": [
+    {
+      "description": "Every dependency change lands through a reviewed PR. Never automerge.",
+      "matchPackageNames": ["*"],
+      "automerge": false
+    },
+    {
+      "description": "GitHub Actions move together.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions"
+    },
+    {
+      "description": "Container base images move together.",
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "groupName": "container images"
+    },
+    {
+      "description": "Majors are opt-in from the dashboard, never opened unprompted.",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "description": "Security fixes skip the quarantine and are labelled for triage.",
+    "minimumReleaseAge": null,
+    "addLabels": ["security"]
+  },
+  "osvVulnerabilityAlerts": true
+}
