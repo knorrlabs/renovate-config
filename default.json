@@ -1,14 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Shared Renovate policy for knorrlabs and etknorr repositories.",
-  "extends": [
-    "config:recommended",
-    ":dependencyDashboard",
-    ":semanticCommits"
-  ],
-  "reviewers": ["etknorr"],
+  "extends": ["config:recommended", ":dependencyDashboard", ":semanticCommits"],
   "minimumReleaseAge": "7 days",
   "automerge": false,
+  "automergeStrategy": "squash",
   "packageRules": [
     {
       "description": "Every dependency change lands through a reviewed PR. Never automerge.",
@@ -29,6 +25,26 @@
       "description": "Majors are opt-in from the dashboard, never opened unprompted.",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
+    },
+    {
+      "description": "First-party GitHub Actions: automerge non-major after the standard quarantine.",
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["actions/**"],
+      "matchUpdateTypes": ["minor", "patch", "digest", "pin"],
+      "groupName": "trusted github actions",
+      "automerge": true
+    },
+    {
+      "description": "Docs sites are not shipped; automerge non-major after the standard quarantine.",
+      "matchFileNames": ["docs/**"],
+      "matchUpdateTypes": ["minor", "patch", "digest", "pin"],
+      "automerge": true
+    },
+    {
+      "description": "Ignition image tracks upstream after the standard quarantine.",
+      "matchPackageNames": ["inductiveautomation/ignition"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
     }
   ],
   "vulnerabilityAlerts": {
