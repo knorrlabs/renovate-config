@@ -3,9 +3,14 @@
   "description": "Opt-in add-on: automerge Ignition-related dependencies after the standard quarantine. Not part of the default preset since not every project tracks Ignition. A repo that wants this extends both presets.",
   "packageRules": [
     {
-      "description": "Ignition-related deps (the platform image, ignition-api-stubs, bwdesigngroup/ignition-docker, etc.) track upstream after the standard quarantine. Patch only for now, since 8.x moves mostly at the 8.3.x level; minor still needs review. This will need a rework once Ignition moves to its year-based version scheme (2027.x.x).",
-      "matchPackageNames": ["/ignition/i"],
+      "description": "Ignition-related deps track upstream after the standard quarantine. Patch only for now, since 8.x moves mostly at the 8.3.x level; minor still needs review. Own groupName so a repo's `container images` / other grouping rules in the default preset can't dilute automerge onto unrelated packages sharing the branch. Explicit list rather than a substring match, since a wrong match here means an unreviewed merge; add to it as new Ignition-related deps show up. This will need a rework once Ignition moves to its year-based version scheme (2027.x.x).",
+      "matchPackageNames": [
+        "inductiveautomation/ignition",
+        "ignition-api-stubs",
+        "bwdesigngroup/ignition-docker"
+      ],
       "matchUpdateTypes": ["patch"],
+      "groupName": "ignition",
       "automerge": true
     }
   ]
