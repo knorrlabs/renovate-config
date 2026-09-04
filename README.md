@@ -17,12 +17,27 @@ Renovate resolves a bare `github>owner/repo` reference to `default.json` on the 
 
 Repositories under `knorrlabs` also pick this up automatically at onboarding: Renovate checks the parent org for a repository named `renovate-config` containing `default.json`. Repositories under `etknorr` sit outside that org, so they must extend the preset explicitly.
 
-## What the preset does
+## What the default preset does
 
-- Never automerges. Every dependency change lands through a reviewed pull request.
 - Holds a release for seven days before it is eligible, so a compromised publish is usually yanked first. Security fixes skip that quarantine.
 - Groups GitHub Actions and container images so they land together instead of one PR each.
 - Requires dashboard approval before a major update is opened.
+- Automerges non-major updates (after the seven-day quarantine) for two low-risk cases: trusted `actions/*` GitHub Actions, and dependencies under a repo's `docs/**` path. Everything else lands through a reviewed pull request.
+
+## Optional add-on presets
+
+Extra policy that not every project wants, kept out of `default.json` so a repo opts in deliberately. Reference alongside the default preset:
+
+```json
+{
+  "extends": [
+    "github>knorrlabs/renovate-config",
+    "github>knorrlabs/renovate-config:ignition-automerge"
+  ]
+}
+```
+
+- **`ignition-automerge`** — automerges patch-level updates (after the standard quarantine) to any dependency with "ignition" in its name: the platform Docker image, `ignition-api-stubs`, `bwdesigngroup/ignition-docker`, and similar. Minor updates still need review, since Ignition's 8.x line moves mostly at the patch level. Only extend this in a repo that actually tracks an Ignition dependency.
 
 ## Local overrides
 
