@@ -1,0 +1,12 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Opt-in add-on: automerge Ignition-related dependencies after the standard quarantine. Not part of the default preset since not every project tracks Ignition. A repo that wants this extends both presets.",
+  "packageRules": [
+    {
+      "description": "Ignition-related deps (the platform image, ignition-api-stubs, bwdesigngroup/ignition-docker, etc.) track upstream after the standard quarantine. Patch only for now, since 8.x moves mostly at the 8.3.x level; minor still needs review. This will need a rework once Ignition moves to its year-based version scheme (2027.x.x).",
+      "matchPackageNames": ["/ignition/i"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    }
+  ]
+}
