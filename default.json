@@ -41,9 +41,9 @@
       "automerge": true
     },
     {
-      "description": "Ignition image tracks upstream after the standard quarantine.",
+      "description": "Ignition image tracks upstream after the standard quarantine. Patch only for now (8.3.x); minor still needs review, and this rule will need a rework once Ignition moves to its year-based version scheme.",
       "matchPackageNames": ["inductiveautomation/ignition"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": ["patch"],
       "automerge": true
     }
   ],
