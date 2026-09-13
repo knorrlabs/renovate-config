@@ -22,7 +22,13 @@ Repositories under `knorrlabs` also pick this up automatically at onboarding: Re
 - Holds a release for seven days before it is eligible, so a compromised publish is usually yanked first. Security fixes skip that quarantine.
 - Groups GitHub Actions and container images so they land together instead of one PR each.
 - Requires dashboard approval before a major update is opened.
-- Automerges non-major updates (after the seven-day quarantine) for two low-risk cases: trusted `actions/*` GitHub Actions, and dependencies under a repo's `docs/**` path. Everything else lands through a reviewed pull request.
+- Automerges non-major updates for two low-risk cases: trusted `actions/*` GitHub Actions (after a shortened **three-day** quarantine) and dependencies under a repo's `docs/**` path (after the full seven days). Everything else lands through a reviewed pull request.
+
+### Why the quarantine is shorter in some places
+
+Seven days is the default because most of the dependency surface is third-party code we do not watch closely, and a week is long enough that a compromised publish is usually caught and yanked before it reaches us. Three days is the exception, granted only where the publisher is a single known vendor whose releases are watched by many people within hours: `actions/*` and, in the opt-in add-on, Ignition. `docs/**` deliberately stays at seven days even though it is automerged — the path is low-risk in blast radius, but it pulls a wide, long transitive npm tree, which is exactly the surface the longer quarantine exists for.
+
+Automerge never bypasses CI. Renovate merges only after required checks pass, so a bad update that breaks the build stops on its own.
 
 ## Optional add-on presets
 
@@ -37,7 +43,7 @@ Extra policy that not every project wants, kept out of `default.json` so a repo 
 }
 ```
 
-- **`ignition-automerge`** — automerges patch-level updates (after the standard quarantine) to any dependency with "ignition" in its name: the platform Docker image, `ignition-api-stubs`, `bwdesigngroup/ignition-docker`, and similar. Minor updates still need review, since Ignition's 8.x line moves mostly at the patch level. Only extend this in a repo that actually tracks an Ignition dependency.
+- **`ignition-automerge`** — automerges patch-level updates, after a shortened three-day quarantine, to an explicit list of Ignition dependencies: the platform Docker image, `ignition-api-stubs`, and `bwdesigngroup/ignition-docker`. The list is explicit rather than a name match, since a wrong match here means an unreviewed merge — add to it as new Ignition dependencies show up. Minor updates still need review, since Ignition's 8.x line moves mostly at the patch level. Only extend this in a repo that actually tracks an Ignition dependency.
 
 ## Local overrides
 
