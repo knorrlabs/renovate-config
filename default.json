@@ -27,10 +27,11 @@
       "dependencyDashboardApproval": true
     },
     {
-      "description": "First-party GitHub Actions: automerge non-major after the standard quarantine.",
+      "description": "First-party GitHub Actions: automerge non-major after a shortened quarantine. actions/* is published by GitHub itself off a public repo with a narrow maintainer set, and a bad publish there is noticed within hours rather than days, so three days buys most of the protection the default seven does without leaving CI a week behind. Scoped to the actions/* namespace on purpose: a third-party action is a different trust question and stays on the default quarantine with no automerge.",
       "matchManagers": ["github-actions"],
       "matchPackageNames": ["actions/**"],
       "matchUpdateTypes": ["minor", "patch", "digest", "pin"],
+      "minimumReleaseAge": "3 days",
       "groupName": "trusted github actions",
       "automerge": true
     },
