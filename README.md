@@ -20,15 +20,26 @@ Repositories under `knorrlabs` also pick this up automatically at onboarding: Re
 ## What the default preset does
 
 - Holds a release for seven days before it is eligible, so a compromised publish is usually yanked first. Security fixes skip that quarantine.
+- **Automerges safe updates once required CI passes:** patch, digest and pin updates for everything, and minor updates for packages at 1.0 or later. Minors under 1.0 can break an API under semver, so they stay reviewed.
+- **Automerges everything under a repo's `docs/**` path, majors included,** without dashboard approval. Docs sites are not shipped; a docs update that breaks the build stops on the required check.
+- Refreshes lockfiles weekly (`lockFileMaintenance`) and automerges the result, which picks up transitive updates no manifest names.
 - Groups GitHub Actions and container images so they land together instead of one PR each.
-- Requires dashboard approval before a major update is opened.
-- Automerges non-major updates for two low-risk cases: trusted `actions/*` GitHub Actions (after a shortened **three-day** quarantine) and dependencies under a repo's `docs/**` path (after the full seven days). Everything else lands through a reviewed pull request.
+- Requires dashboard approval before a major update outside `docs/**` is opened, and never automerges one.
+- Trusted `actions/*` GitHub Actions automerge after a shortened **three-day** quarantine.
+
+### Automerge requires required checks
+
+Automerge is only as safe as the checks a repository *requires*. Renovate enables GitHub auto-merge (`platformAutomerge`), and GitHub merges as soon as the base branch's **required** status checks pass. With no required checks, a PR is mergeable immediately and lands untested. Every repository that extends this preset must have a branch ruleset on its default branch that requires its CI jobs, including the docs build when it has a docs site.
+
+A workflow filtered with `on.pull_request.paths` cannot be a required check: a PR outside those paths never reports it, and the PR waits forever. Run such a workflow on every pull request and skip the expensive job when nothing relevant changed instead. A job skipped by an `if:` reports success for required-check purposes. `stoker-operator`'s `docs-build.yml` is the reference.
 
 ### Why the quarantine is shorter in some places
 
-Seven days is the default because most of the dependency surface is third-party code we do not watch closely, and a week is long enough that a compromised publish is usually caught and yanked before it reaches us. Three days is the exception, granted only where the publisher is a single known vendor whose releases are watched by many people within hours: `actions/*` and, in the opt-in add-on, Ignition. `docs/**` deliberately stays at seven days even though it is automerged — the path is low-risk in blast radius, but it pulls a wide, long transitive npm tree, which is exactly the surface the longer quarantine exists for.
+Seven days is the default because most of the dependency surface is third-party code we do not watch closely, and a week is long enough that a compromised publish is usually caught and yanked before it reaches us. Three days is the exception, granted only where the publisher is a single known vendor whose releases are watched by many people within hours: `actions/*` and, in the opt-in add-on, Ignition. `docs/**` deliberately stays at seven days even though it is automerged: the path is low-risk in blast radius, but it pulls a wide, long transitive npm tree, which is exactly the surface the longer quarantine exists for.
 
-Automerge never bypasses CI. Renovate merges only after required checks pass, so a bad update that breaks the build stops on its own.
+### Opting a dependency out
+
+A repository that needs review on something the preset would automerge adds a rule to its own `renovate.json`, for example `{"matchPackageNames": ["github.com/go-git/go-git/**"], "automerge": false}`.
 
 ## Optional add-on presets
 
@@ -43,7 +54,7 @@ Extra policy that not every project wants, kept out of `default.json` so a repo 
 }
 ```
 
-- **`ignition-automerge`** — automerges patch-level updates, after a shortened three-day quarantine, to an explicit list of Ignition dependencies: the platform Docker image, `ignition-api-stubs`, and `bwdesigngroup/ignition-docker`. The list is explicit rather than a name match, since a wrong match here means an unreviewed merge — add to it as new Ignition dependencies show up. Minor updates still need review, since Ignition's 8.x line moves mostly at the patch level. Only extend this in a repo that actually tracks an Ignition dependency.
+- **`ignition-automerge`**: shortens the quarantine to three days for patch-level updates to an explicit list of Ignition dependencies: the platform Docker image, `ignition-api-stubs`, and `bwdesigngroup/ignition-docker`. The list is explicit rather than a name match, since a wrong match here means an unreviewed merge; add to it as new Ignition dependencies show up. Minor updates still need review, since Ignition's 8.x line moves mostly at the patch level. Only extend this in a repo that actually tracks an Ignition dependency.
 
 ## Local overrides
 

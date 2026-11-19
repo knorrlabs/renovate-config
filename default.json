@@ -4,12 +4,26 @@
   "extends": ["config:recommended", ":dependencyDashboard", ":semanticCommits"],
   "minimumReleaseAge": "7 days",
   "automerge": false,
+  "automergeType": "pr",
+  "platformAutomerge": true,
   "automergeStrategy": "squash",
+  "lockFileMaintenance": {
+    "description": "Weekly lockfile refresh picks up transitive updates (npm, uv, Go sums) that no manifest names. Safe by construction: every resolved version stays inside the ranges the manifests already allow.",
+    "enabled": true,
+    "schedule": ["before 6am on monday"],
+    "automerge": true
+  },
   "packageRules": [
     {
-      "description": "Every dependency change lands through a reviewed PR. Never automerge.",
-      "matchPackageNames": ["*"],
-      "automerge": false
+      "description": "Safe updates automerge once required CI passes: patch, digest and pin changes for everything.",
+      "matchUpdateTypes": ["patch", "digest", "pin", "pinDigest"],
+      "automerge": true
+    },
+    {
+      "description": "Minor updates automerge only for packages at 1.0 or later. Under 1.0, semver lets a minor break the API, so those stay reviewed.",
+      "matchUpdateTypes": ["minor"],
+      "matchCurrentVersion": "!/^v?0\\./",
+      "automerge": true
     },
     {
       "description": "GitHub Actions move together.",
@@ -22,12 +36,13 @@
       "groupName": "container images"
     },
     {
-      "description": "Majors are opt-in from the dashboard, never opened unprompted.",
+      "description": "Majors are opt-in from the dashboard, never opened unprompted, and never automerged.",
       "matchUpdateTypes": ["major"],
-      "dependencyDashboardApproval": true
+      "dependencyDashboardApproval": true,
+      "automerge": false
     },
     {
-      "description": "First-party GitHub Actions: automerge non-major after a shortened quarantine. actions/* is published by GitHub itself off a public repo with a narrow maintainer set, and a bad publish there is noticed within hours rather than days, so three days buys most of the protection the default seven does without leaving CI a week behind. Scoped to the actions/* namespace on purpose: a third-party action is a different trust question and stays on the default quarantine with no automerge.",
+      "description": "First-party GitHub Actions: automerge non-major after a shortened quarantine. actions/* is published by GitHub itself off a public repo with a narrow maintainer set, and a bad publish there is noticed within hours rather than days, so three days buys most of the protection the default seven does without leaving CI a week behind. Scoped to the actions/* namespace on purpose: a third-party action is a different trust question and stays on the default quarantine.",
       "matchManagers": ["github-actions"],
       "matchPackageNames": ["actions/**"],
       "matchUpdateTypes": ["minor", "patch", "digest", "pin"],
@@ -36,14 +51,14 @@
       "automerge": true
     },
     {
-      "description": "Docs sites are not shipped; automerge non-major after the standard quarantine.",
+      "description": "Docs sites are not shipped: every update under docs/**, majors included, opens without dashboard approval and automerges once the docs build passes. A docs major that breaks the build stops on the required check; one that only changes rendering lands, which is the accepted trade-off for not hand-merging docs churn.",
       "matchFileNames": ["docs/**"],
-      "matchUpdateTypes": ["minor", "patch", "digest", "pin"],
+      "dependencyDashboardApproval": false,
       "automerge": true
     }
   ],
   "vulnerabilityAlerts": {
-    "description": "Security fixes skip the quarantine and are labelled for triage.",
+    "description": "Security fixes skip the quarantine and are labelled for triage. They automerge under the same rules as any other update (patch, digest, pin, 1.0+ minor, anything in docs/**); a major security fix still needs review.",
     "minimumReleaseAge": null,
     "addLabels": ["security"]
   },
