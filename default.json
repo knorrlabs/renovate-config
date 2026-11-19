@@ -1,14 +1,19 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Shared Renovate policy for knorrlabs and etknorr repositories.",
-  "extends": ["config:recommended", ":dependencyDashboard", ":semanticCommits"],
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    "security:gomodIndirectSecurityUpdates"
+  ],
   "minimumReleaseAge": "7 days",
   "automerge": false,
   "automergeType": "pr",
   "platformAutomerge": true,
   "automergeStrategy": "squash",
   "lockFileMaintenance": {
-    "description": "Weekly lockfile refresh picks up transitive updates (npm, uv, Go sums) that no manifest names. Safe by construction: every resolved version stays inside the ranges the manifests already allow.",
+    "description": "Weekly lockfile refresh picks up transitive updates that no manifest names, in the lockfiles Renovate maintains (npm, uv and others; not go.sum). Safe by construction: every resolved version stays inside the ranges the manifests already allow.",
     "enabled": true,
     "schedule": ["before 6am on monday"],
     "automerge": true

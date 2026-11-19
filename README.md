@@ -22,10 +22,19 @@ Repositories under `knorrlabs` also pick this up automatically at onboarding: Re
 - Holds a release for seven days before it is eligible, so a compromised publish is usually yanked first. Security fixes skip that quarantine.
 - **Automerges safe updates once required CI passes:** patch, digest and pin updates for everything, and minor updates for packages at 1.0 or later. Minors under 1.0 can break an API under semver, so they stay reviewed.
 - **Automerges everything under a repo's `docs/**` path, majors included,** without dashboard approval. Docs sites are not shipped; a docs update that breaks the build stops on the required check.
-- Refreshes lockfiles weekly (`lockFileMaintenance`) and automerges the result, which picks up transitive updates no manifest names.
+- Refreshes lockfiles weekly (`lockFileMaintenance`) and automerges the result, which picks up transitive updates no manifest names (npm, uv and other supported lockfiles; Go modules are covered by the indirect security preset below).
 - Groups GitHub Actions and container images so they land together instead of one PR each.
 - Requires dashboard approval before a major update outside `docs/**` is opened, and never automerges one.
 - Trusted `actions/*` GitHub Actions automerge after a shortened **three-day** quarantine.
+
+### Renovate is the only dependency bot
+
+Renovate opens every dependency PR, security fixes included. Turn **Dependabot security updates off** in each repository (Settings → Code security), or both bots open a PR for the same advisory. Leave **Dependabot alerts on**: Renovate's `vulnerabilityAlerts` reads them.
+
+The two surfaces Dependabot used to cover are handled here instead:
+
+- **Indirect Go modules:** `security:gomodIndirectSecurityUpdates` opens an update for an `// indirect` module only when it has a known vulnerability.
+- **Lockfile-only npm packages:** Renovate cannot patch a transitive package directly from an advisory, so the weekly `lockFileMaintenance` refresh picks those fixes up, within a week rather than the same day. If a parent's version range excludes the fix, the parent itself has to move.
 
 ### Automerge requires required checks
 
