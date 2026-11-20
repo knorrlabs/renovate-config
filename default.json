@@ -53,12 +53,13 @@
       "automerge": false
     },
     {
-      "description": "First-party GitHub Actions: automerge non-major after a shortened quarantine. actions/* is published by GitHub itself off a public repo with a narrow maintainer set, and a bad publish there is noticed within hours rather than days, so three days buys most of the protection the default seven does without leaving CI a week behind. Scoped to the actions/* namespace on purpose: a third-party action is a different trust question and stays on the default quarantine.",
+      "description": "First-party GitHub Actions: automerge every update, majors included, after a shortened quarantine. actions/* is published by GitHub itself off a public repo with a narrow maintainer set, and a bad publish there is noticed within hours rather than days, so three days buys most of the protection the default seven does without leaving CI a week behind. An actions/* major is usually a runtime bump that the PR's own CI exercises; one used only in a deploy or release job is not exercised until that job runs. Scoped to the actions/* namespace on purpose: a third-party action is a different trust question, stays on the default quarantine, and its majors still need dashboard approval.",
       "matchManagers": ["github-actions"],
       "matchPackageNames": ["actions/**"],
-      "matchUpdateTypes": ["minor", "patch", "digest", "pin"],
+      "matchUpdateTypes": ["major", "minor", "patch", "digest", "pin"],
       "minimumReleaseAge": "3 days",
       "groupName": "trusted github actions",
+      "dependencyDashboardApproval": false,
       "automerge": true
     },
     {

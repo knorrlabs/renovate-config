@@ -24,8 +24,8 @@ Repositories under `knorrlabs` also pick this up automatically at onboarding: Re
 - **Automerges everything under a repo's `docs/**` path, majors included,** without dashboard approval. Docs sites are not shipped; a docs update that breaks the build stops on the required check.
 - Refreshes lockfiles weekly (`lockFileMaintenance`) and automerges the result, which picks up transitive updates no manifest names (npm, uv and other supported lockfiles; Go modules are covered by the indirect security preset below).
 - Groups GitHub Actions and container images so they land together instead of one PR each.
-- Requires dashboard approval before a major update outside `docs/**` is opened, and never automerges one.
-- Trusted `actions/*` GitHub Actions automerge after a shortened **three-day** quarantine.
+- Requires dashboard approval before a major update outside `docs/**` and `actions/*` is opened, and never automerges one.
+- Trusted `actions/*` GitHub Actions automerge after a shortened **three-day** quarantine, majors included. Third-party action majors still need dashboard approval.
 
 ### Renovate is the only dependency bot
 
