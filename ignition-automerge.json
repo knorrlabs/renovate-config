@@ -13,6 +13,16 @@
       "minimumReleaseAge": "3 days",
       "groupName": "ignition",
       "automerge": true
+    },
+    {
+      "description": "Ignition minors need review. The default preset automerges 1.0+ minors, which would otherwise include an 8.3 to 8.4 platform move.",
+      "matchPackageNames": [
+        "inductiveautomation/ignition",
+        "ignition-api-stubs",
+        "bwdesigngroup/ignition-docker"
+      ],
+      "matchUpdateTypes": ["minor"],
+      "automerge": false
     }
   ]
 }

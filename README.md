@@ -63,7 +63,7 @@ Extra policy that not every project wants, kept out of `default.json` so a repo 
 }
 ```
 
-- **`ignition-automerge`**: shortens the quarantine to three days for patch-level updates to an explicit list of Ignition dependencies: the platform Docker image, `ignition-api-stubs`, and `bwdesigngroup/ignition-docker`. The list is explicit rather than a name match, since a wrong match here means an unreviewed merge; add to it as new Ignition dependencies show up. Minor updates still need review, since Ignition's 8.x line moves mostly at the patch level. Only extend this in a repo that actually tracks an Ignition dependency.
+- **`ignition-automerge`**: shortens the quarantine to three days for patch-level updates to an explicit list of Ignition dependencies: the platform Docker image, `ignition-api-stubs`, and `bwdesigngroup/ignition-docker`. The list is explicit rather than a name match, since a wrong match here means an unreviewed merge; add to it as new Ignition dependencies show up. Minor updates still need review, since Ignition's 8.x line moves mostly at the patch level; the add-on turns off the default preset's 1.0+ minor automerge for these packages. Only extend this in a repo that actually tracks an Ignition dependency.
 
 ## Local overrides
 
