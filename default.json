@@ -31,6 +31,12 @@
       "automerge": true
     },
     {
+      "description": "Container image minors stay reviewed. A base-image or runtime minor (golang 1.26 to 1.27, alpine 3.24 to 3.25, python 3.14 to 3.15 via .python-version) changes the toolchain or OS the build runs on, and no PR CI here builds those images or runs that Python.",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["minor"],
+      "automerge": false
+    },
+    {
       "description": "GitHub Actions move together.",
       "matchManagers": ["github-actions"],
       "groupName": "github-actions"

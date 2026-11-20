@@ -20,7 +20,7 @@ Repositories under `knorrlabs` also pick this up automatically at onboarding: Re
 ## What the default preset does
 
 - Holds a release for seven days before it is eligible, so a compromised publish is usually yanked first. Security fixes skip that quarantine.
-- **Automerges safe updates once required CI passes:** patch, digest and pin updates for everything, and minor updates for packages at 1.0 or later. Minors under 1.0 can break an API under semver, so they stay reviewed.
+- **Automerges safe updates once required CI passes:** patch, digest and pin updates for everything, and minor updates for packages at 1.0 or later. Minors under 1.0 can break an API under semver, so they stay reviewed. Container image minors (a `golang`, `alpine` or `python` base image, or `.python-version`) also stay reviewed: they change the toolchain or OS, and no PR CI here builds those images.
 - **Automerges everything under a repo's `docs/**` path, majors included,** without dashboard approval. Docs sites are not shipped; a docs update that breaks the build stops on the required check.
 - Refreshes lockfiles weekly (`lockFileMaintenance`) and automerges the result, which picks up transitive updates no manifest names (npm, uv and other supported lockfiles; Go modules are covered by the indirect security preset below).
 - Groups GitHub Actions and container images so they land together instead of one PR each.
