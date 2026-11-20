@@ -38,7 +38,7 @@ The two surfaces Dependabot used to cover are handled here instead:
 
 ### Automerge requires required checks
 
-Automerge is only as safe as the checks a repository *requires*. Renovate enables GitHub auto-merge (`platformAutomerge`), and GitHub merges as soon as the base branch's **required** status checks pass. With no required checks, a PR is mergeable immediately and lands untested. Every repository that extends this preset must have a branch ruleset on its default branch that requires its CI jobs, including the docs build when it has a docs site.
+Automerge is only as safe as the checks a repository *requires*. Renovate enables GitHub auto-merge (`platformAutomerge`), and GitHub merges as soon as the base branch's **required** status checks pass. With no required checks, a PR is mergeable immediately and lands untested. A repository with auto-merge turned off in its settings is the exception: Renovate then merges the PR itself, and only once every check on it is green. Every repository that extends this preset must have a branch ruleset on its default branch that requires its CI jobs, including the docs build when it has a docs site.
 
 A workflow filtered with `on.pull_request.paths` cannot be a required check: a PR outside those paths never reports it, and the PR waits forever. Run such a workflow on every pull request and skip the expensive job when nothing relevant changed instead. A job skipped by an `if:` reports success for required-check purposes. `stoker-operator`'s `docs-build.yml` is the reference.
 
@@ -64,6 +64,7 @@ Extra policy that not every project wants, kept out of `default.json` so a repo 
 ```
 
 - **`ignition-automerge`**: shortens the quarantine to three days for patch-level updates to an explicit list of Ignition dependencies: the platform Docker image, `ignition-api-stubs`, and `bwdesigngroup/ignition-docker`. The list is explicit rather than a name match, since a wrong match here means an unreviewed merge; add to it as new Ignition dependencies show up. Minor updates still need review, since Ignition's 8.x line moves mostly at the patch level; the add-on turns off the default preset's 1.0+ minor automerge for these packages. Only extend this in a repo that actually tracks an Ignition dependency.
+- **`docs-site`**: for a repository that is itself a docs site, with `package.json` at the root (`ignition-guides`, `knorrlabs.github.io`). Every npm update, majors included, opens without dashboard approval and automerges, the same treatment `docs/**` gets in the default preset. GitHub Actions stay on the default rules. The site build must be a check that gates the merge: a required check, or any check when the repository has auto-merge turned off.
 
 ## Local overrides
 
