@@ -70,7 +70,7 @@
     }
   ],
   "vulnerabilityAlerts": {
-    "description": "Security fixes skip the quarantine and are labelled for triage. They automerge under the same rules as any other update (patch, digest, pin, 1.0+ minor, anything in docs/**); a major security fix still needs review.",
+    "description": "Security fixes skip the quarantine and are labelled for triage. They follow the same automerge rules as any other update.",
     "minimumReleaseAge": null,
     "addLabels": ["security"]
   },
