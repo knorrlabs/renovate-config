@@ -1,14 +1,39 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Shared Renovate policy for knorrlabs and etknorr repositories.",
-  "extends": ["config:recommended", ":dependencyDashboard", ":semanticCommits"],
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    "security:gomodIndirectSecurityUpdates"
+  ],
   "minimumReleaseAge": "7 days",
   "automerge": false,
+  "automergeType": "pr",
+  "platformAutomerge": true,
   "automergeStrategy": "squash",
+  "lockFileMaintenance": {
+    "description": "Weekly lockfile refresh picks up transitive updates that no manifest names, in the lockfiles Renovate maintains (npm, uv and others; not go.sum). Safe by construction: every resolved version stays inside the ranges the manifests already allow.",
+    "enabled": true,
+    "schedule": ["before 6am on monday"],
+    "automerge": true
+  },
   "packageRules": [
     {
-      "description": "Every dependency change lands through a reviewed PR. Never automerge.",
-      "matchPackageNames": ["*"],
+      "description": "Safe updates automerge once required CI passes: patch, digest and pin changes for everything.",
+      "matchUpdateTypes": ["patch", "digest", "pin", "pinDigest"],
+      "automerge": true
+    },
+    {
+      "description": "Minor updates automerge only for packages at 1.0 or later. Under 1.0, semver lets a minor break the API, so those stay reviewed.",
+      "matchUpdateTypes": ["minor"],
+      "matchCurrentVersion": "!/^v?0\\./",
+      "automerge": true
+    },
+    {
+      "description": "Container image minors stay reviewed. A base-image or runtime minor (golang 1.26 to 1.27, alpine 3.24 to 3.25, python 3.14 to 3.15 via .python-version) changes the toolchain or OS the build runs on, and no PR CI here builds those images or runs that Python.",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["minor"],
       "automerge": false
     },
     {
@@ -22,28 +47,30 @@
       "groupName": "container images"
     },
     {
-      "description": "Majors are opt-in from the dashboard, never opened unprompted.",
+      "description": "Majors are opt-in from the dashboard, never opened unprompted, and never automerged.",
       "matchUpdateTypes": ["major"],
-      "dependencyDashboardApproval": true
+      "dependencyDashboardApproval": true,
+      "automerge": false
     },
     {
-      "description": "First-party GitHub Actions: automerge non-major after a shortened quarantine. actions/* is published by GitHub itself off a public repo with a narrow maintainer set, and a bad publish there is noticed within hours rather than days, so three days buys most of the protection the default seven does without leaving CI a week behind. Scoped to the actions/* namespace on purpose: a third-party action is a different trust question and stays on the default quarantine with no automerge.",
+      "description": "First-party GitHub Actions: automerge every update, majors included, after a shortened quarantine. actions/* is published by GitHub itself off a public repo with a narrow maintainer set, and a bad publish there is noticed within hours rather than days, so three days buys most of the protection the default seven does without leaving CI a week behind. An actions/* major is usually a runtime bump that the PR's own CI exercises; one used only in a deploy or release job is not exercised until that job runs. Scoped to the actions/* namespace on purpose: a third-party action is a different trust question, stays on the default quarantine, and its majors still need dashboard approval.",
       "matchManagers": ["github-actions"],
       "matchPackageNames": ["actions/**"],
-      "matchUpdateTypes": ["minor", "patch", "digest", "pin"],
+      "matchUpdateTypes": ["major", "minor", "patch", "digest", "pin"],
       "minimumReleaseAge": "3 days",
       "groupName": "trusted github actions",
+      "dependencyDashboardApproval": false,
       "automerge": true
     },
     {
-      "description": "Docs sites are not shipped; automerge non-major after the standard quarantine.",
+      "description": "Docs sites are not shipped: every update under docs/**, majors included, opens without dashboard approval and automerges once the docs build passes. A docs major that breaks the build stops on the required check; one that only changes rendering lands, which is the accepted trade-off for not hand-merging docs churn.",
       "matchFileNames": ["docs/**"],
-      "matchUpdateTypes": ["minor", "patch", "digest", "pin"],
+      "dependencyDashboardApproval": false,
       "automerge": true
     }
   ],
   "vulnerabilityAlerts": {
-    "description": "Security fixes skip the quarantine and are labelled for triage.",
+    "description": "Security fixes skip the quarantine and are labelled for triage. They follow the same automerge rules as any other update.",
     "minimumReleaseAge": null,
     "addLabels": ["security"]
   },

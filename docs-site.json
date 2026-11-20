@@ -1,0 +1,12 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Opt-in add-on for a repository that is itself a docs site, with its package.json at the repository root. Gives the whole npm tree the treatment the default preset gives docs/**. Extend it after the default preset.",
+  "packageRules": [
+    {
+      "description": "Every npm update, majors included, opens without dashboard approval and automerges once the site build passes. The site is not shipped as a package, so a major that breaks the build stops on the check and one that only changes rendering lands. GitHub Actions and the workflow's node-version stay on the default rules.",
+      "matchManagers": ["npm"],
+      "dependencyDashboardApproval": false,
+      "automerge": true
+    }
+  ]
+}
